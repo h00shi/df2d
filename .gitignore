@@ -1,0 +1,10 @@
+doxygen/
+bin/
+examples/bench1/1d/result/
+examples/bench1/1d/restart/
+examples/bench1/2d/result/
+examples/bench1/2d/restart/
+examples/bench2/result/
+examples/bench2/restart/
+examples/bench3/result/
+examples/bench3/restart
