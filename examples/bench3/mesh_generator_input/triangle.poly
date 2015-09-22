@@ -1,0 +1,92 @@
+# This is an alternative input file to create a mesh for this problem
+# using the triangle mesh generator. In this file the same physical tags
+# (in triangle called boundary marker for lines and region attribute
+#  for triangles) are used as the gmsh file.
+
+# This file has to be run with there options
+# triangle -pq<optional maximum angle>a<maximum area>AD triangle.poly
+# p: Produces a poly file which df2d needs
+# q: Creates finite element mesh
+# a: Assigns maximum area constraint on triangle
+# A: Triangle reads the region number for triangle elements
+# D: Is optional. Triangle might produce a higher quality mesh.
+
+# first we write the nodes.
+# my df2d does not recognize triangles boundary marker for nodes,
+# so we do not use them.
+26 2 0 0
+#fracture end points
+1 .18 .4
+2 .75 .7
+3 .3 .83
+4 .85 .33
+5 .55 .74
+6 .87 .53
+7 .5 .75
+8 .4 .16 
+9 .25 .7
+10 .65 .9 
+11 .35 .3 
+12 .8 .15
+# corner points of the reservoir
+13 0 0
+14 1 0
+15 1 1
+16 0 1
+# fracture cross over points. It is possible not to assign these
+# points in Triangle while in Gmsh they have to be given. I include
+# them anyways.
+17 .37452 .76226
+18 .48505 .66178
+19 .46621 .55040
+20 .55557 .59769
+21 .67284 .65939
+22 .41979 .27674
+# New added points because df2d does not support point source and
+# sink from triangle mesh file.
+23 .1 0
+24 0 .1
+25 .9 1
+26 1 .9
+
+# Now line segments have to be given, i.e. fractures and reservoir edges.
+# Here the boundary maker must be given.
+26 1
+#reservoir edges without boundary condition
+1   13  23  300 #injection
+2   13  24  300 #injection
+3   15  26  301 #production  
+4   15  25  301 #production
+#reservoir edges with boundary conditions
+5   23  14 1515 #an invalid bnd marker 
+6   14  26 1515 #an invalid bnd marker
+7   25  16 1515 #an invalid bnd marker
+8   16  24 1515 #an invalid bnd marker
+#fracture lines their boundary marker is 401
+9   9  17 401
+10   3  17 401
+11   10  17 401
+12   17  18 401
+13   7  18 401
+14   18  19 401
+15  1  19 401
+16   19  20 401
+17   20  21 401
+18   18  20 401
+19   5  21 401
+20   21  2 401
+21   21  6 401
+22   20  4 401
+23   19  22 401
+24   11  22 401
+25   22  12 401
+26   22  8 401
+
+
+#we have no holes
+0
+
+# now we define regions, which is only the matrix region
+2
+1 .1 .1 400 #region number is 400 for matrix
+2 .5 .6 400 # the triangle which is trapped between fractures

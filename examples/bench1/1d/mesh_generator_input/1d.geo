@@ -1,0 +1,9 @@
+Point(1) = {-.8,   0, 0, 1.0};
+Point(2) = {0,  0, 0, 1.0};
+Point(3) = {.4, 0, 0, 1.0};
+Line(1) = {1, 2};
+Line(2) = {2, 3};
+Physical Line(200) = {1};
+Physical Line(201) = {2};
+Physical Point(100) = {1};
+Physical Point(101) = {3};
