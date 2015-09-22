@@ -1,0 +1,337 @@
+/****************************************************************************/
+/****************************************************************************/
+/*				Main Page				    */
+/****************************************************************************/
+/****************************************************************************/
+
+
+/** @mainpage DF_2d
+  @section intro_sec Introduction
+ 
+  DF_2d is a C++ program written by me, Shayan Hoshyari <s.hoshyari@gmail.com>
+  , as a part of my B.Sc. project. This program simulates two-phase immiscible
+  flow in fractured porous media using a finite volume and the discrete
+  fracture method. The details of the project and the theoretical basis of
+  the numerical method can be found in my thesis, in df2d/pdf folder.
+
+  In this page I will explain:
+  1. How to build the program.
+  2. How to run the program.
+  3. A brief explanation of how the code works, and how to start reading this
+  documentation.
+
+  ******************************************************
+  *******************  @section build_sec Building df2d
+  ******************************************************
+
+  Building the program should create an executable file called df2d. Before
+  building the executable file you should:
+  1. Have a GNU/Linux on your machine, e.g.
+  <a href="http://www.ubuntu.com/"> ubuntu </a>, and the gnu compiler.
+  2. Have an installed version of <a href="http://www.mcs.anl.gov/petsc/">
+  Petsc numerical library </a>. If Petsc is installed, the global variables
+  $PETSC_DIR and $PETSC_ARCH should be configured correctly. 
+  3. Have an installed version of <a href="http://arma.sourceforge.net/">
+  Armadillo linear algebra library </a>. If the library and header files
+  are not in a place where the compiler can find them automatically, e.g.
+  /usr/lib and /usr/include you should change the makefile. The instructions
+  to do so can be found in the makefile.
+  4. In order to visualize the results you need
+  <a href="http://www.paraview.org/">  Paraview </a>.
+  5. In order to create a mesh that df2d can read you need either 
+  <a href="https://www.cs.cmu.edu/~quake/triangle.html"> Triangle </a> or
+  <a href="http://geuz.org/gmsh/"> Gmsh </a>.
+
+  If everything is ready simply start the shell, go to the df2d/code folder
+  and type:
+
+  $ make df2d
+
+  This will create an executable file named df2d in the df2d/code/bin folder.
+  In order to use it easier it is better to put a shortuct of it in your
+  ~/bin folder.
+
+  $ ln -s -T </address/to/df2d/exe/file> ~/bin
+  
+  ******************************************************
+  ******************* @section run_sec Running df2d
+  ******************************************************
+
+  In order to run df2d you have to create a folder for your problem. I will call
+  it the case folder. There are some case folders in df2d/code/examples.
+  For example df2d/code/examples/bench3 is the case folder for the third benchmark
+  problem solved in my thesis. Each folder is comprised of the following files and
+  folders:
+
+  a folder to write results in: result/\n
+  a folder to write restart files in: restart/\n
+  a file containing solver input: solver.config\n
+  a file containing petsc commands: petsc.config\n
+  a file containing initial condition: initial\n
+  gmsh mesh file or triangle mesh files: mesh.msh or mesh.ele + mesh.node + mesh.poly
+
+  *******************@subsection result_subsec result folder
+
+  Before running df2d this folder can be empty. After df2d is ran successfully it
+  will be filled with a set of .vtk files, which can be openned with Paraview and
+  a .flow file. The .flow file is an ascii file which simply stores the amount of
+  fluid injected and extracted from the reservoir at each time step.
+
+  *******************@subsection restart_subsec restart folder
+
+  Before running df2d this folder can be empty. Whenever df2d writes a .vtk file
+  it also writes a restart file as well. If your simulation is interrupted you
+  can rename the restart file to initial and put it in the case folder. When you
+  run the df2d it will use the restart file as the initial conditions.
+
+  *******************@subsection petsc_subsec petsc.config
+
+  The pressure equation is solved using the Petsc library. You can pass the Petsc
+  options through this file. For example the following lines:
+
+  @code{.unparsed}
+  -ksp_type bcgs
+  -pc_type  ilu
+  -pc_factor_levels 1	
+  -ksp_initial_guess_nonzero 1
+  @endcode
+
+  Mean that the BiCGStab method is used with ILU(1) preconditioner. Also the
+  pressure field from the last time step is used as the initial guess for the
+  current time step pressure equation. Or the following lines:
+
+  @code{.unparsed}
+  -ksp_type preonly
+  -pc_type  lu
+  @endcode
+
+  Mean that the pressure equation is solved using the multi front method, which
+  is a generalization of the gaussian elimination for sparse matrices. Please
+  consult Petsc's documentation.
+
+  *******************@subsection solver_subsec solver.config
+
+  This file contains all the options passed to df2d. It should have a structure
+  like this:
+
+  @code{.unparsed}
+  # anything after this sign is a comment
+  $regiondata
+		$region
+				type    mat
+				id      <mesh generator id>
+				phi     <porosity>
+				pd      <Pd capillary pressure coefficeint>
+				kr      <relative permeabiliry curve>
+ 				k		<absolute permeabiliry tensor: kxx,kxy;kyx,kyy>
+		$region	
+				type    frac
+				id      <mesh generator id>
+				phi     <porosity>
+				pd      <Pd capillary pressure coefficeint>
+				kr      <relative permeabiliry curve>
+				k		<absolute permeabiliry scalar: k>
+				e		<thickness>
+		$region
+				type    bnd
+				id      <mesh generator id>
+				stype   <gpczero or sconst>
+				ptype   <pconst or qconst>
+				value   <the value of p or q at the boundary depending on ptype>
+				
+		... <other regions data>
+
+
+  $fixeddata
+		dm      <M dimensionless number>
+		dn		<N dimensionless number>
+		dp		<P dimensionless number>
+		dgw     <Gw dimensionless number: \rho_w*g*L/P* >
+		dgn     <Gn dimensionless number: \rho_n*g*L/P* >
+		gorigin <origin of gravity field: x0 y0>
+		gradz   <\nabla h: x y>
+		starttime		<Time that simulation starts from>
+		stoptime		<Time when simulation ends>
+		timestep		<Initial time step>
+		maxtimestep		<Maximum allowed time step>
+		mintimestep		<Minimum allowed time step>
+		maxdeltas		<Maximum allowed change in saturation>
+		mindeltas		<Minimum allowed change in saturation>
+		beta			<Beta as in my thesis>
+		maxtimeiteration		<Maximum number of iterations to solve the saturation equation in order to find a nice dt>
+		nfilebegin				<number of .vtk file to begin with>
+		nfileend				<number of .vtk file to finish with>
+		jmodel					<the cappilary curve used>
+		meshtype				<the mesh input format used>
+		visualtype				<the output format used: must be vtk>
+		visualduplicate 		<should be either 0 1 2>
+
+ $setfield
+	 	<number of command, e.g. 2>
+		circle	<origin-x>   <origin-y>   <radius>  <s-value>
+		rectangle <left-lower-corner-x>  <left-lower-corner-y>  <right-upper-corner-x>  <right-upper-corner-x> <s-value>
+		... <other commands>
+  @endcode
+
+  After $regions you should give df2d the details about each region.
+  Firstly you should say what the region is. The available options are:
+  @code{.unparsed}
+  bnd mat frac
+  @endcode
+  For a boundary, matrix region and fracture region respectively. Afterwards you should
+  mention the ID that the mesh generator has assigned to the elements belonging to that
+  region.
+
+  For a boundary region, you should specify the boundary condition for s and p respectively.
+  For saturation boundary conditions sconst(Dirichlet) and gpczero(Neumann) conditions are
+  available. For pressure pconst(Dirichlet) and qconst(Neumann) conditions are available. The
+  value for velocity or pressure on the boundary should also be mentioned.
+
+  For matrix and fracture regions the value for Pd, porosity and K has to be given. For matrix
+  regions K should be in the format: kxx,kxy;kyx,kyy and for the fractures in the format: k.
+  Relative permeability should be given in one of the following formats:
+  
+  krw = krw0(s)^vw , krn = krn0(1-s)^vn:
+  @code{.unparsed}
+  firooz <krw0> <krn0> <vw0> <vn0>
+  @endcode
+  Vangenuchten:
+  @code{.unparsed}
+  vang <krw0> <krn0> <m>
+  @endcode
+  Brooks-Corey:
+  @code{.unparsed}
+  brooks <krw0> <krn0> <lambda>
+  @endcode
+
+  After $fixeddata all the mentioned parameters should be given. Note that the J curve should be
+  given in the forms:
+  
+  -ln(S):
+  @code{.unparsed}
+  firooz 
+  @endcode
+  No cappilary pressure:
+  @code{.unparsed}
+  zero
+  @endcode
+  linear (1-s):
+  @code{.unparsed}
+  linear
+  @endcode
+  VanGenuchten:
+  @code{.unparsed}
+  vang <m> <epsilon for truncated curve>
+  @endcode
+  Brooks-Corey:
+  @code{.unparsed}
+  brooks <lambda>
+  @endcode
+
+  $setfield is for assigning initial conditions. If you want to change the initial conditions, you
+  should assign rectangles and circles and change the value of saturation inside them.
+
+  *******************@subsection initial_subsec initial
+  This is a text file and shows the initial conditions. It can have two forms:
+
+  @code{.unparsed}
+  %InitialCondition
+  %mod n
+  <value of saturation at node 0>
+  <value of saturation at node 1>
+  ...
+  <value of saturation at last node>  
+  @endcode
+  This type can only be created using the df2d. Either by copying a restart file from restart folder
+  or running df2d with the -s switch.
+
+  @code{.unparsed}
+  %InitialCondition
+  %mod u
+  <constant value for saturation all over the porous media> 
+  @endcode
+  If you are using df2d in a case folder for the first time this options should be used.
+
+  ******************* @subsection mesh_subsec Mesh files
+
+  The mesh files should be prepared by either Triangle or Gmsh.
+
+  When using triangle a mesh.poly
+  file should be present, defining all the fractures and the boundaries. All the line segments
+  in this file should have a bounary marker which is their mesh generator ID. A mesh.ele file
+  should be present defining all the matrix elements. All the triangles should have a region
+  number indicating their mesh generator ID as well. A mesh.node file should be present defining
+  all the nodes.
+
+  When using a mesh.msh file from Gmsh, the file should contain:
+  All the elements on the boundary.
+  All the elements on the fracture.
+  All the matrix elements (either quads or triangles ).
+  All the point source and sinks in the form of node elements.
+  Every element should have a physical label, i.e. its mesh generator ID.
+
+  ******************* @subsection setfield_subsec Changing initial conditions
+
+  To change the initial file according to your instructions in the solver.config file simply run
+  df2d using the -s switch:
+
+  @code{.unparsed}
+  $ df2d -d /path/to/case/folder -s
+  @endcode
+
+  Doing so df2d only changes your initial file. If the -d switch is not given, df2d assumes that
+  the current folder is the case folder.
+
+  ******************* @subsection run_subsec Running the simulation
+
+  If everything is ready you can start a simulation by typing:
+
+  @code{.unparsed}
+  $ df2d -d /path/to/case/folder 
+  @endcode
+
+  ******************************************************************
+  ******************* @section how_sec How to read this documentation
+  *****************************************************************
+
+  Here I will try to explain the main parts of df2d and this documentation. Below you will see a figure
+  showing the source code files:
+
+  <img height="460" width="367" src="../../docfiles/files.svg">
+
+  The source code has been categorized in three modules. @ref mesh_module is responsible for handling the mesh
+  and producing the local matrices and the regions data. The @ref edat_module is responsible for saving all
+  the variables at each node or element, the injected and extracted fluid, the current working directory, etc.
+  The @ref dr_module constitutes of functions that handle the general flow of the program, e.g. reading the
+  input files, marching through time, writing the results, etc.
+
+  It would be easier to read the documentations
+  from bottom to up, i.e. first read main.cpp, then read the driver module and so forth.
+  
+ */ 
+
+
+/****************************************************************************/
+/****************************************************************************/
+/*				Modules	                                    */
+/****************************************************************************/
+/****************************************************************************/
+
+/**
+	@defgroup mesh_module Mesh
+	@brief Classes that deal with saving the mesh and providing other parts of the program with information about the mesh.
+
+	@defgroup edat_module External Data 
+	@brief All the data required by the solver (except the mesh) are dealt with by classes of this this module.
+	
+	All the important members of this module are wrapped in the MData class. Usually a unique
+	instance of MData is passed between  @ref dr_module functions.
+
+	@defgroup dr_module Driver Functions
+	@brief functions that do the general job of the program.
+
+	This module is composed of only functions. Each function takes a reference of an MData and a Mesh class as input
+	and does some changes to it according to its job. For example there is a function to read the mesh, a function
+	to assemble the matrices and march in time, etc.
+*/
+
