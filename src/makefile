@@ -28,8 +28,8 @@ BINDIR = ../bin/
 # You should have petsc installed and the
 # environment variables PETSC_ARCH and PETSC_DIR configured
 # correctly in order to use this makefile.
-include ${PETSC_DIR}/conf/variables
-include ${PETSC_DIR}/conf/rules
+include ${PETSC_DIR}/lib/petsc/conf/variables
+include ${PETSC_DIR}/lib/petsc/conf/rules
 
 # Rules ------------.---------------------------------------------------
 
