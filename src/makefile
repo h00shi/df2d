@@ -33,6 +33,8 @@ include ${PETSC_DIR}/lib/petsc/conf/rules
 
 # Rules ------------.---------------------------------------------------
 
+all: df2d
+
 df2d: region.o jkfunc.o df2d.o error.o node.o formula.o \
 mdata.o  bvertex.o mesh.o  driver.o visit_writer.o asciifile.o \
 geom.o chkopts
