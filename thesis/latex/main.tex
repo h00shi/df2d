@@ -1,0 +1,88 @@
+% -------------------------------------------------------
+% Preamable ---------------------------------------------
+%--------------------------------------------------------
+\documentclass[a4paper,12pt]{report}
+%\documentclass[a4paper,12pt,draft]{report}
+%\documentclass[a4paper,12pt,twoside]{book}
+%\documentclass[a4paper,12pt,twoside]{report}
+%------------------------------------------------
+%pdf links
+%\usepackage [pagebackref=true, colorlinks, linkcolor=blue, citecolor=magenta, urlcolor=cyan]{hyperref} 
+\usepackage[pagebackref=false]{hyperref} %for printed version
+%------------------------------------------------
+\usepackage{graphicx} % inserting images
+\usepackage{setspace} % for switching between double/single space in document
+\usepackage{fancyhdr} % package for changing Headings style
+\usepackage{fancyref} % referencing
+\usepackage[top=3cm,right=3cm,bottom=2.5cm,left=2.5cm]{geometry} % setting the margins 
+\usepackage[nottoc,notlot,notlof]{tocbibind} %show the references in the tof             
+\usepackage{amsmath}  %math formulas
+\usepackage{array}    %beautiful tables
+\usepackage[export]{adjustbox} %aligning images
+\usepackage{subcaption}        %figures with subfigures
+\usepackage{pbox} %text box
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{xepersian}
+
+% tell tex engine address of folder containing your pictures
+\graphicspath{{images/}}
+
+% commands to print the page number in header
+\pagestyle{fancy}
+\cfoot{}
+\lhead{\thepage}
+
+% commands related to XePersian package
+\settextfont[Scale=1.1]{XB Zar}
+\setdigitfont{Parsi Digits}
+
+% -------------------------------------------------------
+% Start document ----------------------------------------
+% -------------------------------------------------------
+
+\input{jeld_info}
+
+\begin{document}
+
+\include{cover_fa}
+%\include{taeid} currently we have no taeid.
+\include{abstract_fa}
+
+\pagenumbering{harfi}
+\tableofcontents
+\listoffigures
+\listoftables
+
+% insert each of your chapters with a \inlcude{filename} command as below
+\onehalfspacing
+\include{chap1-intro}
+\include{chap2-model}
+\include{chap3-numeric}
+\include{chap4-verif}
+\include{chap5-conclude}
+% -------------------------------------------------------
+% Appendix ----------------------------------------------
+%--------------------------------------------------------
+
+% If do not have appendix then comment following 3 lines
+%\appendix
+%\include{peyvast1}
+%\include{peyvast2}
+
+% -------------------------------------------------------
+% References --------------------------------------------
+% -------------------------------------------------------
+
+\singlespacing
+\bibliographystyle{unsrt-fa} % such as plain-fa
+\bibliography{references} %such as MyReferences
+
+% -------------------------------------------------------
+% English Stuff -----------------------------------------
+%--------------------------------------------------------
+
+\include{abstract_en}
+\include{cover_en}
+
+\end{document}
