@@ -1,5 +1,5 @@
 bib:
-	bibtex main.tex
+	bibtex main
 main:
 	xelatex main.tex
 clean:

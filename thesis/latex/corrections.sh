@@ -1,0 +1,14 @@
+sed -i -e 's/\\قسمت/\\section/g' *tex
+sed -i -e 's/\\مرجع/\\cite/g' *tex
+sed -i -e 's/\\پانویس/\\footnote/g' *tex
+sed -i -e 's/\\نقاط/\\dots/g' *tex
+sed -i -e 's/\\شروع/\\begin/g' *tex
+sed -i -e 's/\\پایان/\\end/g' *tex
+sed -i -e 's/\\فقره/\\item/g' *tex
+sed -i -e 's/\\متن/\\text/g' *tex
+sed -i -e 's/\\رجوع/\\ref/g' *tex
+sed -i -e 's/\\ارجاع/\\ref/g' *tex
+sed -i -e 's/\\شرح/\\caption/g' *tex
+sed -i -e 's/\\زیرقسمت/\\subsection/g' *tex
+sed -i -e 's/\\زیرزیرقسمت/\\subsection/g' *tex
+sed -i -e 's/\\موکد/\\emph/g' *tex
