@@ -29,9 +29,7 @@
 	 conserve space the results of other bench folders are not
 	 included. You can run df2d on them to obtain results.
 
-	 ******************************
+	 
 	 Shayan Hoshyari 
-	 Sharif University of Technology	   
-	 B.Sc. Project
-	 June 2015 - Khordad 1394
-	 ******************************
+	 June 2015 
+
